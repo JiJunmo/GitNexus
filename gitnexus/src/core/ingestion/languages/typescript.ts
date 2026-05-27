@@ -93,7 +93,7 @@ import {
  * findEnclosingFunctionId then continues up to the next named ancestor
  * (or to the file).
  */
-const tsExtractFunctionName = (
+export const tsExtractFunctionName = (
   node: SyntaxNode,
 ): { funcName: string | null; label: NodeLabel } | null => {
   if (node.type !== 'arrow_function' && node.type !== 'function_expression') return null;

@@ -139,7 +139,11 @@ export const resolveImportPath = (
 
     // TypeScript ESM: imports use .js/.jsx/.mjs/.cjs but source files are
     // .ts/.tsx/.mts/.cts. Strip the JS-family extension and re-resolve.
-    if (language === SupportedLanguages.TypeScript || language === SupportedLanguages.JavaScript) {
+    if (
+      language === SupportedLanguages.TypeScript ||
+      language === SupportedLanguages.JavaScript ||
+      language === SupportedLanguages.ArkTS
+    ) {
       const stripped = stripJsExtension(basePath);
       if (stripped !== null) {
         return cache(tryResolveWithExtensions(stripped, allFiles));
