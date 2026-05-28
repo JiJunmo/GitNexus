@@ -801,7 +801,6 @@ jobs:
           NPM_TAG: ${{ needs.route.outputs.mode == 'rc' && 'rc' || 'latest' }}
         run: npm publish --access public --tag "$NPM_TAG"
 
-
       # ── Stable-only: pull CHANGELOG body if present ──────────────────────
       - name: Extract release notes from CHANGELOG (stable)
         id: changelog
@@ -982,4 +981,3 @@ jobs:
           files: ${{ matrix.artifact_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

@@ -50,7 +50,10 @@ const ARKTS_SPECIFIC_BUILT_INS = [
   'getSharedAsync',
 ] as const;
 
-const ARKTS_BUILT_INS: ReadonlySet<string> = new Set([...TS_BUILT_INS, ...ARKTS_SPECIFIC_BUILT_INS]);
+const ARKTS_BUILT_INS: ReadonlySet<string> = new Set([
+  ...TS_BUILT_INS,
+  ...ARKTS_SPECIFIC_BUILT_INS,
+]);
 
 export const arktsProvider = defineLanguage({
   id: SupportedLanguages.ArkTS,
@@ -94,5 +97,3 @@ export const arktsProvider = defineLanguage({
 
 // Trigger comment: Force automatic Release Candidate (RC) build workflow on main push.
 // Trigger 2: Actions enabled, starting parallel multi-platform asset build.
-
-

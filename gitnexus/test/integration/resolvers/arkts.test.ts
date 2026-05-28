@@ -7,7 +7,6 @@ import {
   FIXTURES,
   getRelationships,
   getNodesByLabel,
-  getNodesByLabelFull,
   runPipelineFromRepo,
   type PipelineResult,
 } from './helpers.js';
@@ -52,12 +51,15 @@ describe('ArkTS support', () => {
   it('resolves imports between ArkTS files', () => {
     const imports = getRelationships(result, 'IMPORTS');
     const importToUtils = imports.filter(
-      (e) => e.sourceFilePath.endsWith('EntryComponent.ets') && e.targetFilePath.endsWith('utils.ets'),
+      (e) =>
+        e.sourceFilePath.endsWith('EntryComponent.ets') && e.targetFilePath.endsWith('utils.ets'),
     );
     expect(importToUtils.length).toBeGreaterThanOrEqual(1);
 
     const importToBtn = imports.filter(
-      (e) => e.sourceFilePath.endsWith('EntryComponent.ets') && e.targetFilePath.endsWith('ButtonComponent.ets'),
+      (e) =>
+        e.sourceFilePath.endsWith('EntryComponent.ets') &&
+        e.targetFilePath.endsWith('ButtonComponent.ets'),
     );
     expect(importToBtn.length).toBeGreaterThanOrEqual(1);
   });
