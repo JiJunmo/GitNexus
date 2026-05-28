@@ -896,3 +896,78 @@ jobs:
       attestations: write
     with:
       tag: ${{ needs.publish.outputs.vtag }}
+
+  # ── Phase 6: Build & Attach Native Release Assets ──────────────────────────
+  build-release-assets:
+    name: Build & Attach Release Assets
+    needs: [route, publish]
+    if: ${{ always() && needs.publish.result == 'success' && needs.publish.outputs.vtag != '' }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            artifact_name: gitnexus-windows-x64.zip
+          - os: macos-latest
+            artifact_name: gitnexus-macos-x64.tar.gz
+          - os: ubuntu-latest
+            artifact_name: gitnexus-linux-x64.tar.gz
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 20
+          package-manager-cache: false
+
+      - name: Build gitnexus-shared
+        run: |
+          npm install
+          npm run build
+        working-directory: gitnexus-shared
+
+      - name: Install and Build gitnexus
+        run: |
+          npm ci
+          npm run build
+        working-directory: gitnexus
+
+      # Windows packaging (produces a portable .zip with Windows bat runner)
+      - name: Package Windows Release Asset
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path publish/dist
+          Copy-Item -Path gitnexus/dist/* -Destination publish/dist -Recurse
+          Copy-Item -Path gitnexus/node_modules -Destination publish/node_modules -Recurse
+          "@echo off`r`nnode `"%~dp0dist/cli/index.js`" %*" | Out-File -FilePath publish/gitnexus.bat -Encoding utf8
+          Compress-Archive -Path publish/* -DestinationPath ${{ matrix.artifact_name }}
+
+      # Unix packaging (produces a portable .tar.gz with sh runner)
+      - name: Package Unix Release Asset
+        if: matrix.os != 'windows-latest'
+        shell: bash
+        run: |
+          mkdir -p publish/dist
+          cp -r gitnexus/dist/* publish/dist/
+          cp -r gitnexus/node_modules publish/
+          echo '#!/bin/sh' > publish/gitnexus
+          echo 'node "$(dirname "$0")/dist/cli/index.js" "$@"' >> publish/gitnexus
+          chmod +x publish/gitnexus
+          tar -czf ${{ matrix.artifact_name }} -C publish .
+
+      # Upload package as release asset using standard softprops action
+      - name: Attach Asset to GitHub Release
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v2
+        with:
+          tag_name: ${{ needs.publish.outputs.vtag }}
+          files: ${{ matrix.artifact_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
