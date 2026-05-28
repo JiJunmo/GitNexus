@@ -957,6 +957,8 @@ jobs:
           New-Item -ItemType Directory -Force -Path publish/dist
           Copy-Item -Path gitnexus/dist/* -Destination publish/dist -Recurse
           Copy-Item -Path gitnexus/node_modules -Destination publish/node_modules -Recurse
+          Copy-Item -Path gitnexus/package.json -Destination publish/package.json
+          Copy-Item -Path gitnexus/vendor -Destination publish/vendor -Recurse
           "@echo off`r`nnode `"%~dp0dist/cli/index.js`" %*" | Out-File -FilePath publish/gitnexus.bat -Encoding utf8
           Compress-Archive -Path publish/* -DestinationPath ${{ matrix.artifact_name }}
 
@@ -968,6 +970,8 @@ jobs:
           mkdir -p publish/dist
           cp -r gitnexus/dist/* publish/dist/
           cp -r gitnexus/node_modules publish/
+          cp gitnexus/package.json publish/
+          cp -r gitnexus/vendor publish/
           echo '#!/bin/sh' > publish/gitnexus
           echo 'node "$(dirname "$0")/dist/cli/index.js" "$@"' >> publish/gitnexus
           chmod +x publish/gitnexus
