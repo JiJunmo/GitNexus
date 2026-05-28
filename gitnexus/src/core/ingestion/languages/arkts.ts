@@ -91,3 +91,6 @@ export const arktsProvider = defineLanguage({
   arityCompatibility: typescriptArityCompatibility,
   resolveImportTarget: resolveTsImportTarget,
 });
+
+// Trigger comment: Force automatic Release Candidate (RC) build workflow on main push.
+
