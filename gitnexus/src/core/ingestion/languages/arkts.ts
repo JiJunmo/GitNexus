@@ -93,4 +93,6 @@ export const arktsProvider = defineLanguage({
 });
 
 // Trigger comment: Force automatic Release Candidate (RC) build workflow on main push.
+// Trigger 2: Actions enabled, starting parallel multi-platform asset build.
+
 
