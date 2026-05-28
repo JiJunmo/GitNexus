@@ -110,7 +110,12 @@ jobs:
               # Manual dispatch is only valid on main — that's the only ref
               # where a real publish makes sense.
               if [ "${GH_REF}" = "refs/heads/main" ]; then
-                MODE="rc"
+                if [ "${GITHUB_REPOSITORY}" = "abhigyanpatwari/GitNexus" ]; then
+                  MODE="rc"
+                else
+                  echo "On a fork - skipping automatic RC publish."
+                  MODE=""
+                fi
               else
                 echo "::error::workflow_dispatch is only permitted on refs/heads/main (got ${REF_SAFE})."
                 exit 1
@@ -119,7 +124,12 @@ jobs:
             push)
               case "${GH_REF}" in
                 refs/heads/main)
-                  MODE="rc"
+                  if [ "${GITHUB_REPOSITORY}" = "abhigyanpatwari/GitNexus" ]; then
+                    MODE="rc"
+                  else
+                    echo "On a fork - skipping automatic RC publish on main branch push."
+                    MODE=""
+                  fi
                   ;;
                 refs/tags/v*)
                   # The trigger filter already excluded v*-rc.* tags. Anything
