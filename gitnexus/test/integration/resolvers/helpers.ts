@@ -363,6 +363,11 @@ const LEGACY_RESOLVER_PARITY_EXPECTED_FAILURES: Readonly<Record<string, Readonly
     // Scope-resolver-only correctness wins; backporting is out of scope.
     'process(data::value) emits zero CALLS edges \u2014 data::value is a variable, not a function',
     'run_with(callback) emits zero CALLS edges when callback is a parameter, not a function reference',
+    // PR #1633: strict function-type ADL no longer contributes the referenced
+    // function's enclosing namespace. The legacy DAG still resolves these via
+    // simple-name global fallback.
+    'with_callback(utils::worker) emits zero CALLS edges when worker has no class parameter or return type',
+    'with_callback(utils::worker) with overloaded utils::worker still emits zero CALLS edges',
     // PR #1599 adversarial review findings: nearest-scope ADL blocker
     // semantics and block-scope function declaration ADL suppression are
     // scope-resolver-only. The legacy DAG has no scope-aware ADL blocker
@@ -379,6 +384,10 @@ const LEGACY_RESOLVER_PARITY_EXPECTED_FAILURES: Readonly<Record<string, Readonly
     // PR #1634: deep-nesting suppression. The scope-resolver enforces a
     // one-level cap on namespace walking. The legacy DAG picks arbitrarily.
     'Derived<T>::g() -> this->f() emits zero CALLS when Inner is two levels deep (ns.a.b) — one-level cap enforced',
+    // Template partial ordering (#1635) relies on C++ parameter type-class
+    // sidecars and scope-resolver overload narrowing. The legacy DAG does not
+    // rank function-template shapes, so it leaves the call unresolved.
+    'pick(T*) wins over pick(T) for pointer arguments',
   ]),
 };
 
