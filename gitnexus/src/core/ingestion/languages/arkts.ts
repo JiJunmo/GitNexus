@@ -59,6 +59,11 @@ export const arktsProvider = defineLanguage({
   id: SupportedLanguages.ArkTS,
   extensions: ['.ets'],
   entryPointPatterns: [/^use[A-Z]/],
+  preprocessSource: (sourceText: string) => {
+    // Replace 'struct' keyword with 'class ' to parse ArkTS structs as standard classes.
+    // Both 'struct' and 'class ' are exactly 6 characters, preserving coordinates and indices.
+    return sourceText.replace(/\bstruct\b/g, 'class ');
+  },
   astFrameworkPatterns: [
     {
       framework: 'harmonyos',

@@ -44,6 +44,16 @@ describe('ArkTS support', () => {
     expect(interfaces).toContain('User');
   });
 
+  it('extracts Struct/Class nodes and their methods from ArkTS files', () => {
+    const classes = getNodesByLabel(result, 'Class');
+    expect(classes).toContain('EntryComponent');
+    expect(classes).toContain('ButtonComponent');
+
+    const methods = getNodesByLabel(result, 'Method');
+    expect(methods).toContain('build');
+    expect(methods).toContain('onButtonClick');
+  });
+
   // -------------------------------------------------------------------------
   // Import resolution: .ets files
   // -------------------------------------------------------------------------
